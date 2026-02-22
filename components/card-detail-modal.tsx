@@ -238,8 +238,8 @@ export function CardDetailModal({
               onChange={(e) => setDescription(e.target.value)}
               onBlur={handleDescriptionBlur}
               placeholder="Agrega una descripcion mas detallada..."
-              className="min-h-[80px] text-sm resize-none leading-relaxed"
-              rows={7}
+              className="min-h-[80px] text-sm leading-relaxed"
+              rows={5}
             />
           </section>
 
