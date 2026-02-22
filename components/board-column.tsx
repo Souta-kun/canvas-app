@@ -146,6 +146,11 @@ export function BoardColumn({
         )}
       </div>
 
+      {/* Add Card */}
+      <div className="px-2 pb-3">
+        <AddCardForm columnId={column.id} onAdd={onAddCard} />
+      </div>
+
       {/* Cards Area */}
       <div
         className="flex-1 px-2 overflow-y-auto min-h-0"
@@ -162,11 +167,6 @@ export function BoardColumn({
             />
           ))}
         </div>
-      </div>
-
-      {/* Add Card */}
-      <div className="px-2 pb-3">
-        <AddCardForm columnId={column.id} onAdd={onAddCard} />
       </div>
     </div>
   );
