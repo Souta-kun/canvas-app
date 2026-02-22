@@ -1,52 +1,75 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useRef } from "react"
-import { format } from "date-fns"
-import { es } from "date-fns/locale"
-import {
-  CalendarIcon,
-  Plus,
-  Trash2,
-  X,
-  AlignLeft,
-  ListChecks,
-  CalendarRange,
-  Tag,
-} from "lucide-react"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Progress } from "@/components/ui/progress"
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog"
-import type { Card, LabelColor, Subtask } from "@/lib/types"
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Progress } from "@/components/ui/progress";
+import { Textarea } from "@/components/ui/textarea";
+import type { Card, LabelColor, Subtask } from "@/lib/types";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
+import {
+  AlignLeft,
+  CalendarIcon,
+  CalendarRange,
+  ListChecks,
+  Plus,
+  Tag,
+  Trash2,
+  X,
+} from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 interface CardDetailModalProps {
-  card: Card | null
-  columnId: string | null
-  columnTitle: string
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onUpdate: (columnId: string, cardId: string, updates: Partial<Omit<Card, "id" | "createdAt">>) => void
-  onDelete: (columnId: string, cardId: string) => void
+  card: Card | null;
+  columnId: string | null;
+  columnTitle: string;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onUpdate: (
+    columnId: string,
+    cardId: string,
+    updates: Partial<Omit<Card, "id" | "createdAt">>,
+  ) => void;
+  onDelete: (columnId: string, cardId: string) => void;
 }
 
-const labelConfig: { color: LabelColor; bg: string; ring: string; name: string }[] = [
+const labelConfig: {
+  color: LabelColor;
+  bg: string;
+  ring: string;
+  name: string;
+}[] = [
   { color: "blue", bg: "bg-blue-500", ring: "ring-blue-500", name: "Azul" },
-  { color: "green", bg: "bg-emerald-500", ring: "ring-emerald-500", name: "Verde" },
-  { color: "amber", bg: "bg-amber-500", ring: "ring-amber-500", name: "Amarillo" },
+  {
+    color: "green",
+    bg: "bg-emerald-500",
+    ring: "ring-emerald-500",
+    name: "Verde",
+  },
+  {
+    color: "amber",
+    bg: "bg-amber-500",
+    ring: "ring-amber-500",
+    name: "Amarillo",
+  },
   { color: "rose", bg: "bg-rose-500", ring: "ring-rose-500", name: "Rosa" },
   { color: "teal", bg: "bg-teal-500", ring: "ring-teal-500", name: "Teal" },
-]
+];
 
 export function CardDetailModal({
   card,
@@ -57,89 +80,97 @@ export function CardDetailModal({
   onUpdate,
   onDelete,
 }: CardDetailModalProps) {
-  const [title, setTitle] = useState("")
-  const [description, setDescription] = useState("")
-  const [labels, setLabels] = useState<LabelColor[]>([])
-  const [subtasks, setSubtasks] = useState<Subtask[]>([])
-  const [startDate, setStartDate] = useState<Date | undefined>()
-  const [endDate, setEndDate] = useState<Date | undefined>()
-  const [newSubtask, setNewSubtask] = useState("")
-  const [isEditingTitle, setIsEditingTitle] = useState(false)
-  const titleInputRef = useRef<HTMLInputElement>(null)
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [labels, setLabels] = useState<LabelColor[]>([]);
+  const [subtasks, setSubtasks] = useState<Subtask[]>([]);
+  const [startDate, setStartDate] = useState<Date | undefined>();
+  const [endDate, setEndDate] = useState<Date | undefined>();
+  const [newSubtask, setNewSubtask] = useState("");
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const titleInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (card) {
-      setTitle(card.title)
-      setDescription(card.description ?? "")
-      setLabels([...card.labels])
-      setSubtasks(card.subtasks.map((s) => ({ ...s })))
-      setStartDate(card.startDate ? new Date(card.startDate) : undefined)
-      setEndDate(card.endDate ? new Date(card.endDate) : undefined)
+      setTitle(card.title);
+      setDescription(card.description ?? "");
+      setLabels([...card.labels]);
+      setSubtasks(card.subtasks.map((s) => ({ ...s })));
+      setStartDate(card.startDate ? new Date(card.startDate) : undefined);
+      setEndDate(card.endDate ? new Date(card.endDate) : undefined);
     }
-  }, [card])
+  }, [card]);
 
-  if (!card || !columnId) return null
+  if (!card || !columnId) return null;
 
   function save(updates: Partial<Omit<Card, "id" | "createdAt">>) {
-    onUpdate(columnId!, card!.id, updates)
+    onUpdate(columnId!, card!.id, updates);
   }
 
   function handleTitleBlur() {
-    const trimmed = title.trim()
+    const trimmed = title.trim();
     if (trimmed && trimmed !== card!.title) {
-      save({ title: trimmed })
+      save({ title: trimmed });
     } else {
-      setTitle(card!.title)
+      setTitle(card!.title);
     }
-    setIsEditingTitle(false)
+    setIsEditingTitle(false);
   }
 
   function handleDescriptionBlur() {
-    const desc = description.trim() || undefined
+    const desc = description.trim() || undefined;
     if (desc !== card!.description) {
-      save({ description: desc })
+      save({ description: desc });
     }
   }
 
   function toggleLabel(color: LabelColor) {
-    const next = labels.includes(color) ? labels.filter((c) => c !== color) : [...labels, color]
-    setLabels(next)
-    save({ labels: next })
+    const next = labels.includes(color)
+      ? labels.filter((c) => c !== color)
+      : [...labels, color];
+    setLabels(next);
+    save({ labels: next });
   }
 
   function addSubtask() {
-    const trimmed = newSubtask.trim()
-    if (!trimmed) return
-    const next = [...subtasks, { id: crypto.randomUUID(), title: trimmed, completed: false }]
-    setSubtasks(next)
-    setNewSubtask("")
-    save({ subtasks: next })
+    const trimmed = newSubtask.trim();
+    if (!trimmed) return;
+    const next = [
+      ...subtasks,
+      { id: crypto.randomUUID(), title: trimmed, completed: false },
+    ];
+    setSubtasks(next);
+    setNewSubtask("");
+    save({ subtasks: next });
   }
 
   function toggleSubtask(id: string) {
-    const next = subtasks.map((s) => (s.id === id ? { ...s, completed: !s.completed } : s))
-    setSubtasks(next)
-    save({ subtasks: next })
+    const next = subtasks.map((s) =>
+      s.id === id ? { ...s, completed: !s.completed } : s,
+    );
+    setSubtasks(next);
+    save({ subtasks: next });
   }
 
   function deleteSubtask(id: string) {
-    const next = subtasks.filter((s) => s.id !== id)
-    setSubtasks(next)
-    save({ subtasks: next })
+    const next = subtasks.filter((s) => s.id !== id);
+    setSubtasks(next);
+    save({ subtasks: next });
   }
 
   function handleStartDate(date: Date | undefined) {
-    setStartDate(date)
-    save({ startDate: date?.getTime() })
+    setStartDate(date);
+    save({ startDate: date?.getTime() });
   }
 
   function handleEndDate(date: Date | undefined) {
-    setEndDate(date)
-    save({ endDate: date?.getTime() })
+    setEndDate(date);
+    save({ endDate: date?.getTime() });
   }
 
-  const completedCount = subtasks.filter((s) => s.completed).length
-  const subtaskProgress = subtasks.length > 0 ? (completedCount / subtasks.length) * 100 : 0
+  const completedCount = subtasks.filter((s) => s.completed).length;
+  const subtaskProgress =
+    subtasks.length > 0 ? (completedCount / subtasks.length) * 100 : 0;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -149,13 +180,13 @@ export function CardDetailModal({
           {labels.length > 0 && (
             <div className="flex items-center gap-1.5 mb-3">
               {labels.map((label) => {
-                const cfg = labelConfig.find((l) => l.color === label)
+                const cfg = labelConfig.find((l) => l.color === label);
                 return (
                   <span
                     key={label}
                     className={cn("h-2 w-10 rounded-full", cfg?.bg)}
                   />
-                )
+                );
               })}
             </div>
           )}
@@ -167,10 +198,10 @@ export function CardDetailModal({
               onChange={(e) => setTitle(e.target.value)}
               onBlur={handleTitleBlur}
               onKeyDown={(e) => {
-                if (e.key === "Enter") handleTitleBlur()
+                if (e.key === "Enter") handleTitleBlur();
                 if (e.key === "Escape") {
-                  setTitle(card.title)
-                  setIsEditingTitle(false)
+                  setTitle(card.title);
+                  setIsEditingTitle(false);
                 }
               }}
               className="text-lg font-semibold border-none px-0 focus-visible:ring-0 h-auto"
@@ -180,15 +211,16 @@ export function CardDetailModal({
             <DialogTitle
               className="text-lg font-semibold cursor-pointer hover:text-primary transition-colors text-left"
               onClick={() => {
-                setIsEditingTitle(true)
-                setTimeout(() => titleInputRef.current?.focus(), 0)
+                setIsEditingTitle(true);
+                setTimeout(() => titleInputRef.current?.focus(), 0);
               }}
             >
               {card.title}
             </DialogTitle>
           )}
           <DialogDescription className="text-xs text-muted-foreground">
-            En la lista <span className="font-medium text-foreground">{columnTitle}</span>
+            En la lista{" "}
+            <span className="font-medium text-foreground">{columnTitle}</span>
           </DialogDescription>
         </DialogHeader>
 
@@ -197,7 +229,9 @@ export function CardDetailModal({
           <section>
             <div className="flex items-center gap-2 mb-2">
               <AlignLeft className="h-4 w-4 text-muted-foreground" />
-              <h4 className="text-sm font-medium text-foreground">Descripcion</h4>
+              <h4 className="text-sm font-medium text-foreground">
+                Descripcion
+              </h4>
             </div>
             <Textarea
               value={description}
@@ -205,6 +239,7 @@ export function CardDetailModal({
               onBlur={handleDescriptionBlur}
               placeholder="Agrega una descripcion mas detallada..."
               className="min-h-[80px] text-sm resize-none leading-relaxed"
+              rows={7}
             />
           </section>
 
@@ -224,7 +259,7 @@ export function CardDetailModal({
                     l.bg,
                     labels.includes(l.color)
                       ? "ring-2 ring-offset-2 ring-offset-background " + l.ring
-                      : "opacity-50 hover:opacity-80"
+                      : "opacity-50 hover:opacity-80",
                   )}
                 >
                   {l.name}
@@ -247,7 +282,7 @@ export function CardDetailModal({
                     size="sm"
                     className={cn(
                       "h-9 gap-2 text-xs font-normal",
-                      !startDate && "text-muted-foreground"
+                      !startDate && "text-muted-foreground",
                     )}
                   >
                     <CalendarIcon className="h-3.5 w-3.5" />
@@ -287,7 +322,7 @@ export function CardDetailModal({
                     size="sm"
                     className={cn(
                       "h-9 gap-2 text-xs font-normal",
-                      !endDate && "text-muted-foreground"
+                      !endDate && "text-muted-foreground",
                     )}
                   >
                     <CalendarIcon className="h-3.5 w-3.5" />
@@ -351,7 +386,7 @@ export function CardDetailModal({
                   <span
                     className={cn(
                       "flex-1 text-sm leading-relaxed",
-                      st.completed && "line-through text-muted-foreground"
+                      st.completed && "line-through text-muted-foreground",
                     )}
                   >
                     {st.title}
@@ -376,7 +411,7 @@ export function CardDetailModal({
                 placeholder="Agregar subtarea..."
                 className="h-8 text-sm flex-1"
                 onKeyDown={(e) => {
-                  if (e.key === "Enter") addSubtask()
+                  if (e.key === "Enter") addSubtask();
                 }}
               />
               <Button
@@ -399,8 +434,8 @@ export function CardDetailModal({
               size="sm"
               className="text-destructive hover:text-destructive hover:bg-destructive/10 gap-2 text-xs"
               onClick={() => {
-                onDelete(columnId!, card!.id)
-                onOpenChange(false)
+                onDelete(columnId!, card!.id);
+                onOpenChange(false);
               }}
             >
               <Trash2 className="h-3.5 w-3.5" />
@@ -410,5 +445,5 @@ export function CardDetailModal({
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
