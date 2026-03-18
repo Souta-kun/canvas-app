@@ -3,7 +3,19 @@
 import { BoardSidebar } from "@/components/board-sidebar";
 import { KanbanBoard } from "@/components/kanban-board";
 import { useBoard } from "@/hooks/use-board";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+const AUTH_PIN_HASH_256 =
+  "b4746d5e8a4c2ccd1f3f2c594fa0c10c254d7486f655b81f71967b89a0aa5a2a";
+
+const hashPin = async (pin: string) => {
+  if (typeof window === "undefined" || !window.crypto?.subtle) return "";
+  const encoded = new TextEncoder().encode(pin);
+  const digest = await window.crypto.subtle.digest("SHA-256", encoded);
+  return Array.from(new Uint8Array(digest))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+};
 
 export default function Page() {
   const {
@@ -17,6 +29,62 @@ export default function Page() {
   } = useBoard();
 
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [enteredPin, setEnteredPin] = useState("");
+  const [pinError, setPinError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setIsAuthenticated(false); // cada carga obliga a reingresar pin
+  }, []);
+
+  const handlePinSubmit = async () => {
+    const enteredHash = await hashPin(enteredPin);
+    if (enteredHash && enteredHash === AUTH_PIN_HASH_256) {
+      setIsAuthenticated(true);
+      setPinError(null);
+      setEnteredPin("");
+    } else {
+      setPinError("PIN incorrecto. Intenta de nuevo.");
+      setIsAuthenticated(false);
+    }
+  };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-background/90 p-4 z-50">
+        <div className="w-full max-w-sm rounded-lg bg-card p-6 shadow-lg border border-border">
+          <h2 className="mb-3 text-lg font-bold">Acceso protegido</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Ingresa el PIN para continuar.
+          </p>
+          <input
+            type="password"
+            value={enteredPin}
+            onChange={(e) => setEnteredPin(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                handlePinSubmit();
+              }
+            }}
+            className="w-full border border-border rounded px-3 py-2 mb-2 bg-background text-foreground"
+            placeholder="PIN"
+            autoFocus
+          />
+          {pinError && (
+            <p className="text-xs text-destructive mb-2">{pinError}</p>
+          )}
+          <button
+            onClick={handlePinSubmit}
+            className="w-full rounded bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+            type="button"
+          >
+            Validar PIN
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen bg-background overflow-hidden">
