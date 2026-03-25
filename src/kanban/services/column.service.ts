@@ -1,63 +1,80 @@
-import api from "@/lib/api";
+import useHttp from "@/lib/useHttp";
+import { useCallback, useMemo } from "react";
+import { useKanban } from "../context";
 import { Column, IAPIResult } from "../types";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+export const useColumnService = () => {
+  const { state } = useKanban();
+  const { http } = useHttp(state.key);
 
-export const columnService = {
-  async addColumn(boardId: string, title: string): Promise<Column | null> {
-    try {
-      const response = await api.post<IAPIResult<Column>>(
-        `${API_URL}/columns`,
-        { boardId, title },
-      );
+  const addColumn = useCallback(
+    async (boardId: string, title: string): Promise<Column | null> => {
+      try {
+        const response = await http.post<IAPIResult<Column>>(`/columns`, {
+          boardId,
+          title,
+        });
 
-      const { data } = response.data;
+        const { data } = response.data;
 
-      return data || null;
-    } catch (error) {
-      alert(
-        error.response?.data?.error ||
-          "Failed to add column. Please try again.",
-      );
-      return null;
-    }
-  },
+        return data || null;
+      } catch (error) {
+        alert(
+          error.response?.data?.error ||
+            "Failed to add column. Please try again.",
+        );
+        return null;
+      }
+    },
+    [http],
+  );
 
-  async updateColumn(
-    id: string,
-    boardId: string,
-    title: string,
-  ): Promise<boolean> {
-    try {
-      await api.put<IAPIResult<Column>>(`${API_URL}/columns`, {
-        id,
-        boardId,
-        title,
-      });
+  const updateColumn = useCallback(
+    async (id: string, boardId: string, title: string): Promise<boolean> => {
+      try {
+        await http.put<IAPIResult<Column>>(`/columns`, {
+          id,
+          boardId,
+          title,
+        });
 
-      return true;
-    } catch (error) {
-      alert(
-        error.response?.data?.error ||
-          "Failed to update column. Please try again.",
-      );
-      return false;
-    }
-  },
+        return true;
+      } catch (error) {
+        alert(
+          error.response?.data?.error ||
+            "Failed to update column. Please try again.",
+        );
+        return false;
+      }
+    },
+    [http],
+  );
 
-  async removeColumn(id: string, boardId: string): Promise<boolean> {
-    try {
-      await api.delete<IAPIResult<Column>>(`${API_URL}/columns/`, {
-        data: { id, boardId },
-      });
+  const removeColumn = useCallback(
+    async (id: string, boardId: string): Promise<boolean> => {
+      try {
+        await http.delete<IAPIResult<Column>>(`/columns/`, {
+          data: { id, boardId },
+        });
 
-      return true;
-    } catch (error) {
-      alert(
-        error.response?.data?.error ||
-          "Failed to remove column. Please try again.",
-      );
-      return false;
-    }
-  },
+        return true;
+      } catch (error) {
+        alert(
+          error.response?.data?.error ||
+            "Failed to remove column. Please try again.",
+        );
+        return false;
+      }
+    },
+    [http],
+  );
+
+  return useMemo(
+    () => ({
+      addColumn,
+      updateColumn,
+      removeColumn,
+    }),
+    [addColumn, updateColumn, removeColumn],
+  );
 };

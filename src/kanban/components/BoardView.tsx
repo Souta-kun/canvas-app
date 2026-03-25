@@ -3,13 +3,14 @@ import { Input } from "@/components/ui/input";
 import { Columns3, Plus, X } from "lucide-react";
 import { useState } from "react";
 import { useKanban } from "../context";
-import { columnService } from "../services/column.service";
+import { useColumnService } from "../services/column.service";
 import { Card as CardType } from "../types";
 import { CardModal } from "./CardModal";
 import { KanbanColumn } from "./KanbanColumn";
 
 export function BoardView() {
   const { state, dispatch } = useKanban();
+  const columnService = useColumnService();
   const board = state.activeBoard;
   const [addingCol, setAddingCol] = useState(false);
   const [colTitle, setColTitle] = useState("");
@@ -25,7 +26,13 @@ export function BoardView() {
 
     dispatch({
       type: "ADD_COLUMN",
-      payload: { column: { id: newColumn.id, title: newColumn.title, cards: newColumn.cards } },
+      payload: {
+        column: {
+          id: newColumn.id,
+          title: newColumn.title,
+          cards: newColumn.cards,
+        },
+      },
     });
     setColTitle("");
     setAddingCol(false);
@@ -37,16 +44,19 @@ export function BoardView() {
   };
 
   // Re-read card from state for modal (live updates)
-  const liveCard = board?.columns
-    .find((c) => c.id === modalColumnId)
-    ?.cards.find((c) => c.id === modalCard?.id) ?? null;
+  const liveCard =
+    board?.columns
+      .find((c) => c.id === modalColumnId)
+      ?.cards.find((c) => c.id === modalCard?.id) ?? null;
 
   if (!board) {
     return (
       <div className="flex-1 flex items-center justify-center">
         <div className="text-center space-y-3">
           <Columns3 className="w-12 h-12 mx-auto text-muted-foreground/40" />
-          <p className="text-muted-foreground text-sm">Selecciona o crea un tablero para empezar</p>
+          <p className="text-muted-foreground text-sm">
+            Selecciona o crea un tablero para empezar
+          </p>
         </div>
       </div>
     );
@@ -56,8 +66,12 @@ export function BoardView() {
     <div className="flex-1 flex flex-col min-w-0">
       {/* Board header */}
       <header className="h-14 flex items-center px-6 border-b bg-card/50 backdrop-blur-sm shrink-0">
-        <h1 className="text-lg font-semibold tracking-tight text-foreground">{board.name}</h1>
-        <span className="ml-3 text-xs text-muted-foreground">{board.columns.length} columnas</span>
+        <h1 className="text-lg font-semibold tracking-tight text-foreground">
+          {board.name}
+        </h1>
+        <span className="ml-3 text-xs text-muted-foreground">
+          {board.columns.length} columnas
+        </span>
       </header>
 
       {/* Columns area */}
@@ -84,8 +98,22 @@ export function BoardView() {
                 autoFocus
               />
               <div className="flex gap-1.5">
-                <Button size="sm" onClick={handleAddColumn} className="h-7 text-xs">Agregar</Button>
-                <Button size="sm" variant="ghost" onClick={() => { setAddingCol(false); setColTitle(""); }} className="h-7 text-xs">
+                <Button
+                  size="sm"
+                  onClick={handleAddColumn}
+                  className="h-7 text-xs"
+                >
+                  Agregar
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => {
+                    setAddingCol(false);
+                    setColTitle("");
+                  }}
+                  className="h-7 text-xs"
+                >
                   <X className="w-3.5 h-3.5" />
                 </Button>
               </div>
@@ -108,7 +136,10 @@ export function BoardView() {
         columnId={modalColumnId}
         boardId={board.id}
         open={!!liveCard}
-        onClose={() => { setModalCard(null); setModalColumnId(null); }}
+        onClose={() => {
+          setModalCard(null);
+          setModalColumnId(null);
+        }}
       />
     </div>
   );

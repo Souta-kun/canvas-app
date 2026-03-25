@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useKanban } from "../context";
-import { boardService } from "../services/board.service";
+import { useBoardService } from "../services/board.service";
 
 interface BoardSidebarProps {
   collapsed: boolean;
@@ -22,6 +22,7 @@ interface BoardSidebarProps {
 
 export function BoardSidebar({ collapsed, onToggle }: BoardSidebarProps) {
   const { state, dispatch, selectBoard } = useKanban();
+  const boardService = useBoardService(state.key);
   const [newName, setNewName] = useState("");
   const [adding, setAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);

@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 import { Calendar, Plus, Save, Tag, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useKanban } from "../context";
-import { cardService } from "../services/card.service";
+import { useCardService } from "../services/card.service";
 import { Card as CardType, LabelColor, Subtask } from "../types";
 import { generateId, LABEL_NAMES, LABEL_STYLES } from "../utils";
 
@@ -35,6 +35,7 @@ export function CardModal({
   onClose,
 }: CardModalProps) {
   const { dispatch } = useKanban();
+  const cardService = useCardService();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [labels, setLabels] = useState<LabelColor[]>([]);

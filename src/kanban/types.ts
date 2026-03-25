@@ -38,6 +38,7 @@ export interface KanbanState {
   boards: BoardListItem[];
   activeBoardId: string | null;
   activeBoard: Board | null;
+  key: number | null;
 }
 
 // Action types
@@ -47,13 +48,25 @@ export type KanbanAction =
   | { type: "UPDATE_BOARD"; payload: { id: string; name: string } }
   | { type: "DELETE_BOARD"; payload: { id: string } }
   | { type: "SET_ACTIVE_BOARD"; payload: { id: string; board: Board } }
+  | { type: "SET_KEY"; payload: { key: number | null } }
   | { type: "ADD_COLUMN"; payload: { column: Column } }
   | { type: "UPDATE_COLUMN"; payload: { columnId: string; title: string } }
   | { type: "DELETE_COLUMN"; payload: { columnId: string } }
   | { type: "ADD_CARD"; payload: { columnId: string; card: Card } }
-  | { type: "UPDATE_CARD"; payload: { columnId: string; cardId: string; updates: Partial<Card> } }
+  | {
+      type: "UPDATE_CARD";
+      payload: { columnId: string; cardId: string; updates: Partial<Card> };
+    }
   | { type: "DELETE_CARD"; payload: { columnId: string; cardId: string } }
-  | { type: "MOVE_CARD"; payload: { cardId: string; sourceColumnId: string; targetColumnId: string; position: number } };
+  | {
+      type: "MOVE_CARD";
+      payload: {
+        cardId: string;
+        sourceColumnId: string;
+        targetColumnId: string;
+        position: number;
+      };
+    };
 
 export interface IAPIResult<T> {
   success: boolean;

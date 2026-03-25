@@ -10,8 +10,8 @@ import { cn } from "@/lib/utils";
 import { Check, MoreHorizontal, Pencil, Plus, Trash2, X } from "lucide-react";
 import React, { useRef, useState } from "react";
 import { useKanban } from "../context";
-import { cardService } from "../services/card.service";
-import { columnService } from "../services/column.service";
+import { useCardService } from "../services/card.service";
+import { useColumnService } from "../services/column.service";
 import { Card, Column } from "../types";
 import { KanbanCard } from "./KanbanCard";
 
@@ -27,6 +27,8 @@ export function KanbanColumn({
   onCardClick,
 }: KanbanColumnProps) {
   const { dispatch } = useKanban();
+  const cardService = useCardService();
+  const columnService = useColumnService();
   const [addingCard, setAddingCard] = useState(false);
   const [newCardTitle, setNewCardTitle] = useState("");
   const [editing, setEditing] = useState(false);
