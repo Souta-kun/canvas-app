@@ -1,11 +1,13 @@
 import useHttp from "@/lib/useHttp";
 import { useCallback, useMemo } from "react";
+import { useKanban } from "../context";
 import { Board, BoardListItem, IAPIResult } from "../types";
 
-export const useBoardService = (apiKey: number | null = null) => {
-  const { http } = useHttp(apiKey);
+export const useBoardService = () => {
+  const { state, dispatch } = useKanban();
+  const { http } = useHttp(state.key);
 
-  const loadBoardList = useCallback(async (): Promise<BoardListItem[]> => {
+  const loadBoardList = async (): Promise<BoardListItem[] | null> => {
     try {
       const response = await http.get<IAPIResult<BoardListItem[]>>(`/boards`);
 
@@ -13,13 +15,17 @@ export const useBoardService = (apiKey: number | null = null) => {
 
       return data || [];
     } catch (error) {
-      alert(
-        error.response?.data?.error ||
-          "Failed to load board list. Please try again.",
-      );
-      return [];
+      dispatch({
+        type: "SET_ERROR",
+        payload: {
+          error:
+            error.response?.data?.error ||
+            "Failed to load board list. Please try again.",
+        },
+      });
+      return null;
     }
-  }, [http]);
+  };
 
   const loadBoard = useCallback(
     async (id: string): Promise<Board | null> => {
@@ -30,10 +36,14 @@ export const useBoardService = (apiKey: number | null = null) => {
 
         return data || null;
       } catch (error) {
-        alert(
-          error.response?.data?.error ||
-            "Failed to load board. Please try again.",
-        );
+        dispatch({
+          type: "SET_ERROR",
+          payload: {
+            error:
+              error.response?.data?.error ||
+              "Failed to load board. Please try again.",
+          },
+        });
         return null;
       }
     },
@@ -51,10 +61,14 @@ export const useBoardService = (apiKey: number | null = null) => {
 
         return data || null;
       } catch (error) {
-        alert(
-          error.response?.data?.error ||
-            "Failed to add board. Please try again.",
-        );
+        dispatch({
+          type: "SET_ERROR",
+          payload: {
+            error:
+              error.response?.data?.error ||
+              "Failed to add board. Please try again.",
+          },
+        });
         return null;
       }
     },
@@ -68,10 +82,14 @@ export const useBoardService = (apiKey: number | null = null) => {
 
         return true;
       } catch (error) {
-        alert(
-          error.response?.data?.error ||
-            "Failed to update board. Please try again.",
-        );
+        dispatch({
+          type: "SET_ERROR",
+          payload: {
+            error:
+              error.response?.data?.error ||
+              "Failed to update board. Please try again.",
+          },
+        });
         return false;
       }
     },
@@ -85,10 +103,14 @@ export const useBoardService = (apiKey: number | null = null) => {
 
         return true;
       } catch (error) {
-        alert(
-          error.response?.data?.error ||
-            "Failed to remove board. Please try again.",
-        );
+        dispatch({
+          type: "SET_ERROR",
+          payload: {
+            error:
+              error.response?.data?.error ||
+              "Failed to remove board. Please try again.",
+          },
+        });
         return false;
       }
     },

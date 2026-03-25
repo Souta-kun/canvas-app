@@ -4,7 +4,7 @@ import { useKanban } from "../context";
 import { Column, IAPIResult } from "../types";
 
 export const useColumnService = () => {
-  const { state } = useKanban();
+  const { state, dispatch } = useKanban();
   const { http } = useHttp(state.key);
 
   const addColumn = useCallback(
@@ -19,10 +19,14 @@ export const useColumnService = () => {
 
         return data || null;
       } catch (error) {
-        alert(
-          error.response?.data?.error ||
-            "Failed to add column. Please try again.",
-        );
+        dispatch({
+          type: "SET_ERROR",
+          payload: {
+            error:
+              error.response?.data?.error ||
+              "Failed to add column. Please try again.",
+          },
+        });
         return null;
       }
     },
@@ -40,10 +44,14 @@ export const useColumnService = () => {
 
         return true;
       } catch (error) {
-        alert(
-          error.response?.data?.error ||
-            "Failed to update column. Please try again.",
-        );
+        dispatch({
+          type: "SET_ERROR",
+          payload: {
+            error:
+              error.response?.data?.error ||
+              "Failed to update column. Please try again.",
+          },
+        });
         return false;
       }
     },
@@ -59,10 +67,14 @@ export const useColumnService = () => {
 
         return true;
       } catch (error) {
-        alert(
-          error.response?.data?.error ||
-            "Failed to remove column. Please try again.",
-        );
+        dispatch({
+          type: "SET_ERROR",
+          payload: {
+            error:
+              error.response?.data?.error ||
+              "Failed to remove column. Please try again.",
+          },
+        });
         return false;
       }
     },

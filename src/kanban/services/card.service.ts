@@ -4,7 +4,7 @@ import { useKanban } from "../context";
 import { Card, IAPIResult, LabelColor, Subtask } from "../types";
 
 export const useCardService = () => {
-  const { state } = useKanban();
+  const { state, dispatch } = useKanban();
   const { http } = useHttp(state.key);
 
   const addCard = useCallback(
@@ -26,10 +26,14 @@ export const useCardService = () => {
 
         return data || null;
       } catch (error) {
-        alert(
-          error.response?.data?.error ||
-            "Failed to add card. Please try again.",
-        );
+        dispatch({
+          type: "SET_ERROR",
+          payload: {
+            error:
+              error.response?.data?.error ||
+              "Failed to add card. Please try again.",
+          },
+        });
         return null;
       }
     },
@@ -63,10 +67,14 @@ export const useCardService = () => {
 
         return true;
       } catch (error) {
-        alert(
-          error.response?.data?.error ||
-            "Failed to update card. Please try again.",
-        );
+        dispatch({
+          type: "SET_ERROR",
+          payload: {
+            error:
+              error.response?.data?.error ||
+              "Failed to update card. Please try again.",
+          },
+        });
         return false;
       }
     },
@@ -82,10 +90,14 @@ export const useCardService = () => {
 
         return true;
       } catch (error) {
-        alert(
-          error.response?.data?.error ||
-            "Failed to remove card. Please try again.",
-        );
+        dispatch({
+          type: "SET_ERROR",
+          payload: {
+            error:
+              error.response?.data?.error ||
+              "Failed to remove card. Please try again.",
+          },
+        });
         return false;
       }
     },
@@ -111,10 +123,14 @@ export const useCardService = () => {
 
         return true;
       } catch (error) {
-        alert(
-          error.response?.data?.error ||
-            "Failed to move card. Please try again.",
-        );
+        dispatch({
+          type: "SET_ERROR",
+          payload: {
+            error:
+              error.response?.data?.error ||
+              "Failed to move card. Please try again.",
+          },
+        });
         return false;
       }
     },

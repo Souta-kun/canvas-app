@@ -21,12 +21,19 @@ interface BoardSidebarProps {
 }
 
 export function BoardSidebar({ collapsed, onToggle }: BoardSidebarProps) {
-  const { state, dispatch, selectBoard } = useKanban();
-  const boardService = useBoardService(state.key);
+  const { state, dispatch } = useKanban();
+  const boardService = useBoardService();
   const [newName, setNewName] = useState("");
   const [adding, setAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
+
+  const handleSelectBoard = async (id: string) => {
+    const board = await boardService.loadBoard(id);
+    if (board) {
+      dispatch({ type: "SET_ACTIVE_BOARD", payload: { id, board } });
+    }
+  };
 
   const handleAdd = async () => {
     const name = newName.trim();
@@ -42,7 +49,7 @@ export function BoardSidebar({ collapsed, onToggle }: BoardSidebarProps) {
       setNewName("");
       setAdding(false);
       // Auto-select the new board
-      setTimeout(async () => await selectBoard(newBoard.id), 0);
+      setTimeout(async () => await handleSelectBoard(newBoard.id), 0);
     }
   };
 
@@ -87,7 +94,7 @@ export function BoardSidebar({ collapsed, onToggle }: BoardSidebarProps) {
             <button
               key={board.id}
               title={board.name}
-              onClick={() => selectBoard(board.id)}
+              onClick={() => handleSelectBoard(board.id)}
               className={cn(
                 "w-9 h-9 rounded-md flex items-center justify-center text-xs font-semibold transition-colors",
                 state.activeBoardId === board.id
@@ -142,7 +149,7 @@ export function BoardSidebar({ collapsed, onToggle }: BoardSidebarProps) {
                 ? "bg-sidebar-accent text-sidebar-accent-foreground"
                 : "hover:bg-sidebar-accent/50 text-sidebar-foreground/70",
             )}
-            onClick={() => selectBoard(board.id)}
+            onClick={() => handleSelectBoard(board.id)}
           >
             {editingId === board.id ? (
               <div

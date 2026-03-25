@@ -39,6 +39,7 @@ export interface KanbanState {
   activeBoardId: string | null;
   activeBoard: Board | null;
   key: number | null;
+  error: string | null;
 }
 
 // Action types
@@ -66,7 +67,8 @@ export type KanbanAction =
         targetColumnId: string;
         position: number;
       };
-    };
+    }
+  | { type: "SET_ERROR"; payload: { error: string | null } };
 
 export interface IAPIResult<T> {
   success: boolean;

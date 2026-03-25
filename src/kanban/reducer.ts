@@ -5,6 +5,7 @@ export const initialState: KanbanState = {
   activeBoardId: null,
   activeBoard: null,
   key: null,
+  error: null,
 };
 
 function updateActiveBoard(
@@ -163,6 +164,12 @@ export function kanbanReducer(
         return { ...b, columns: finalColumns };
       });
     }
+
+    case "SET_ERROR":
+      return {
+        ...state,
+        error: action.payload.error,
+      };
 
     default:
       return state;
