@@ -12,7 +12,7 @@ type ErrorTooltipProps = {
 };
 
 export function ErrorTooltip({
-  duration = 3000,
+  duration = 5000,
   onClose,
   className,
 }: ErrorTooltipProps) {

@@ -1,5 +1,6 @@
 import useHttp from "@/lib/useHttp";
 import { useCallback, useMemo } from "react";
+import { v7 as uuidv7 } from "uuid";
 import { useKanban } from "../context";
 import { Card, IAPIResult, LabelColor, Subtask } from "../types";
 
@@ -16,6 +17,7 @@ export const useCardService = () => {
     ): Promise<Card | null> => {
       try {
         const response = await http.post<IAPIResult<Card>>(`/cards`, {
+          id: uuidv7(),
           boardId,
           columnId,
           title,
