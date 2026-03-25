@@ -165,7 +165,8 @@ export function CardModal({
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Agrega una descripción..."
-            className="min-h-[80px] resize-none text-sm"
+            className="min-h-[80px] resize-y text-sm"
+            rows={6}
           />
         </div>
 
