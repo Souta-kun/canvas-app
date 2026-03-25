@@ -30,6 +30,10 @@ export function KanbanProvider({ children }: { children: React.ReactNode }) {
         payload: { boards, activeBoardId: null, activeBoard: null },
       });
 
+      if (boards && boards.length > 0) {
+        selectBoard(boards[0].id);
+      }
+      
       setLoaded(true);
     };
 
