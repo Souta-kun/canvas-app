@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ErrorTooltip } from "./components/ui/error-tooltip.tsx";
+import { LoadingOverlay } from "./components/ui/loading-overlay.tsx";
 import { KanbanProvider } from "./kanban/context.tsx";
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
@@ -16,6 +17,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <KanbanProvider>
+        <LoadingOverlay />
         <ErrorTooltip />
         <BrowserRouter>
           <Routes>

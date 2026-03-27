@@ -9,6 +9,7 @@ export const useColumnService = () => {
 
   const addColumn = useCallback(
     async (boardId: string, title: string): Promise<Column | null> => {
+      dispatch({ type: "SET_LOADING", payload: { loading: true } });
       try {
         const response = await http.post<IAPIResult<Column>>(`/columns`, {
           boardId,
@@ -28,6 +29,8 @@ export const useColumnService = () => {
           },
         });
         return null;
+      } finally {
+        dispatch({ type: "SET_LOADING", payload: { loading: false } });
       }
     },
     [http],
@@ -35,6 +38,7 @@ export const useColumnService = () => {
 
   const updateColumn = useCallback(
     async (id: string, boardId: string, title: string): Promise<boolean> => {
+      dispatch({ type: "SET_LOADING", payload: { loading: true } });
       try {
         await http.put<IAPIResult<Column>>(`/columns`, {
           id,
@@ -53,6 +57,8 @@ export const useColumnService = () => {
           },
         });
         return false;
+      } finally {
+        dispatch({ type: "SET_LOADING", payload: { loading: false } });
       }
     },
     [http],
@@ -60,6 +66,7 @@ export const useColumnService = () => {
 
   const removeColumn = useCallback(
     async (id: string, boardId: string): Promise<boolean> => {
+      dispatch({ type: "SET_LOADING", payload: { loading: true } });
       try {
         await http.delete<IAPIResult<Column>>(`/columns/`, {
           data: { id, boardId },
@@ -76,6 +83,8 @@ export const useColumnService = () => {
           },
         });
         return false;
+      } finally {
+        dispatch({ type: "SET_LOADING", payload: { loading: false } });
       }
     },
     [http],

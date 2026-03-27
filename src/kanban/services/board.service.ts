@@ -8,6 +8,7 @@ export const useBoardService = () => {
   const { http } = useHttp(state.key);
 
   const loadBoardList = async (): Promise<BoardListItem[] | null> => {
+    dispatch({ type: "SET_LOADING", payload: { loading: true } });
     try {
       const response = await http.get<IAPIResult<BoardListItem[]>>(`/boards`);
 
@@ -24,11 +25,14 @@ export const useBoardService = () => {
         },
       });
       return null;
+    } finally {
+      dispatch({ type: "SET_LOADING", payload: { loading: false } });
     }
   };
 
   const loadBoard = useCallback(
     async (id: string): Promise<Board | null> => {
+      dispatch({ type: "SET_LOADING", payload: { loading: true } });
       try {
         const response = await http.get<IAPIResult<Board>>(`/boards/${id}`);
 
@@ -45,38 +49,41 @@ export const useBoardService = () => {
           },
         });
         return null;
+      } finally {
+        dispatch({ type: "SET_LOADING", payload: { loading: false } });
       }
     },
     [http],
   );
 
-  const addBoard = useCallback(
-    async (name: string): Promise<Board | null> => {
-      try {
-        const response = await http.post<IAPIResult<Board>>(`/boards`, {
-          name,
-        });
+  const addBoard = async (name: string): Promise<Board | null> => {
+    dispatch({ type: "SET_LOADING", payload: { loading: true } });
+    try {
+      const response = await http.post<IAPIResult<Board>>(`/boards`, {
+        name,
+      });
 
-        const { data } = response.data;
+      const { data } = response.data;
 
-        return data || null;
-      } catch (error) {
-        dispatch({
-          type: "SET_ERROR",
-          payload: {
-            error:
-              error.response?.data?.error ||
-              "Failed to add board. Please try again.",
-          },
-        });
-        return null;
-      }
-    },
-    [http],
-  );
+      return data || null;
+    } catch (error) {
+      dispatch({
+        type: "SET_ERROR",
+        payload: {
+          error:
+            error.response?.data?.error ||
+            "Failed to add board. Please try again.",
+        },
+      });
+      return null;
+    } finally {
+      dispatch({ type: "SET_LOADING", payload: { loading: false } });
+    }
+  };
 
   const updateBoard = useCallback(
     async (id: string, name: string): Promise<boolean> => {
+      dispatch({ type: "SET_LOADING", payload: { loading: true } });
       try {
         await http.put<IAPIResult<Board>>(`/boards`, { id, name });
 
@@ -91,6 +98,8 @@ export const useBoardService = () => {
           },
         });
         return false;
+      } finally {
+        dispatch({ type: "SET_LOADING", payload: { loading: false } });
       }
     },
     [http],
@@ -98,6 +107,7 @@ export const useBoardService = () => {
 
   const removeBoard = useCallback(
     async (id: string): Promise<boolean> => {
+      dispatch({ type: "SET_LOADING", payload: { loading: true } });
       try {
         await http.delete<IAPIResult<Board>>(`/boards/${id}`);
 
@@ -112,6 +122,8 @@ export const useBoardService = () => {
           },
         });
         return false;
+      } finally {
+        dispatch({ type: "SET_LOADING", payload: { loading: false } });
       }
     },
     [http],

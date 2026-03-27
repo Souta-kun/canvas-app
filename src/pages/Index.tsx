@@ -28,6 +28,7 @@ const Index = () => {
           activeBoard: null,
           key: state.key,
           error: null,
+          loading: false
         },
       });
 

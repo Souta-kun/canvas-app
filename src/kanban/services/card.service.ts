@@ -15,6 +15,7 @@ export const useCardService = () => {
       title: string,
       createdAt: number,
     ): Promise<Card | null> => {
+      dispatch({ type: "SET_LOADING", payload: { loading: true } });
       try {
         const response = await http.post<IAPIResult<Card>>(`/cards`, {
           id: uuidv7(),
@@ -37,6 +38,8 @@ export const useCardService = () => {
           },
         });
         return null;
+      } finally {
+        dispatch({ type: "SET_LOADING", payload: { loading: false } });
       }
     },
     [http],
@@ -54,6 +57,7 @@ export const useCardService = () => {
       endDate?: number,
       subtasks?: Subtask[],
     ): Promise<boolean> => {
+      dispatch({ type: "SET_LOADING", payload: { loading: true } });
       try {
         await http.put<IAPIResult<Card>>(`/cards`, {
           id,
@@ -78,6 +82,8 @@ export const useCardService = () => {
           },
         });
         return false;
+      } finally {
+        dispatch({ type: "SET_LOADING", payload: { loading: false } });
       }
     },
     [http],
@@ -85,6 +91,7 @@ export const useCardService = () => {
 
   const removeCard = useCallback(
     async (id: string, columnId: string, boardId: string): Promise<boolean> => {
+      dispatch({ type: "SET_LOADING", payload: { loading: true } });
       try {
         await http.delete<IAPIResult<Card>>(`/cards/`, {
           data: { id, columnId, boardId },
@@ -101,6 +108,8 @@ export const useCardService = () => {
           },
         });
         return false;
+      } finally {
+        dispatch({ type: "SET_LOADING", payload: { loading: false } });
       }
     },
     [http],
@@ -114,6 +123,7 @@ export const useCardService = () => {
       targetColumnId: string,
       position: number,
     ): Promise<boolean> => {
+      dispatch({ type: "SET_LOADING", payload: { loading: true } });
       try {
         await http.put<IAPIResult<Card>>(`/cards/move`, {
           boardId,
@@ -134,6 +144,8 @@ export const useCardService = () => {
           },
         });
         return false;
+      } finally {
+        dispatch({ type: "SET_LOADING", payload: { loading: false } });
       }
     },
     [http],

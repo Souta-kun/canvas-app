@@ -6,6 +6,7 @@ export const initialState: KanbanState = {
   activeBoard: null,
   key: null,
   error: null,
+  loading: false
 };
 
 function updateActiveBoard(
@@ -169,6 +170,12 @@ export function kanbanReducer(
       return {
         ...state,
         error: action.payload.error,
+      };
+
+    case "SET_LOADING":
+      return {
+        ...state,
+        loading: action.payload.loading,
       };
 
     default:
