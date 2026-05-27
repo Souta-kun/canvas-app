@@ -46,7 +46,7 @@ export const KanbanCard = React.memo(function KanbanCard({ card, onClick, onDrag
         {card.endDate && (
           <span className="flex items-center gap-1 text-xs">
             <Calendar className="w-3 h-3" />
-            {new Date(card.endDate).toLocaleDateString("es", { day: "numeric", month: "short" })}
+            {new Date(card.endDate).toLocaleDateString("es", { day: "numeric", month: "short", timeZone: "UTC" })}
           </span>
         )}
       </div>
