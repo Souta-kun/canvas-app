@@ -1,5 +1,6 @@
 import useHttp from "@/lib/useHttp";
 import { useCallback, useMemo } from "react";
+import { v7 as uuidv7 } from "uuid";
 import { useKanban } from "../context";
 import { Column, IAPIResult } from "../types";
 
@@ -12,6 +13,7 @@ export const useColumnService = () => {
       dispatch({ type: "SET_LOADING", payload: { loading: true } });
       try {
         const response = await http.post<IAPIResult<Column>>(`/columns`, {
+          id: uuidv7(),
           boardId,
           title,
         });
